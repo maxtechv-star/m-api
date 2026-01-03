@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="theme-color" content="#000000">
+    <meta name="robots" content="index, follow">
+    <meta name="keywords" content="API documentation, RESTful APIs, developer tools, dark theme API dashboard">
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <title></title>
+    <link rel="icon" href="" type="image/png">
+    <link rel="canonical" href="/">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'mono': ['Ubuntu Mono', 'monospace'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    colors: {
+                        'premium-blue': '#3B82F6',
+                        'premium-purple': '#8B5CF6',
+                        'neutral-dark': '#333333',
+                        'neutral-light': '#D1D5DB'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media (max-width: 767px) {
+            ::-webkit-scrollbar {
+                display: none !important;
+            }
+        }
+        /* Loader styles */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-text {
+            margin-top: 16px;
+            font-size: 1.25rem;
+            color: #d1d5db;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+        }
+        .loading-text::after {
+            display: inline-block;
+            content: '...';
+            animation: loading-dots 1.5s steps(4, end) infinite;
+            width: 1em;
+        }
+        @keyframes loading-dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+            100% { content: ''; }
+        }
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        .slide-down {
+            animation: slideDown 0.15s ease-out;
+        }
+        .slide-up {
+            animation: slideUp 0.15s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        body {
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+        .bg-gradient-premium {
+            background: linear-gradient(to right, #3B82F6, #8B5CF6);
+        }
+        .hover\:shadow-premium:hover {
+            box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+        }
+        .text-premium {
+            color: #D1D5DB;
+        }
+        main {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        main.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-[#000000] text-premium antialiased font-sans min-h-screen">
+    <!-- Loader -->
+    <div id="loader">
+        <span class="loading-text">Loading</span>
+    </div>
+    <header class="sticky top-0 z-50 bg-[#000000] border-b border-neutral-dark py-4 shadow-md">
+        <div class="max-w-2xl lg:max-w-3xl mx-auto flex justify-center items-center px-4 lg:px-8">
+            <h1 id="headerTitle" class="text-lg font-bold text-white"></h1>
+        </div>
+    </header>
+    <main class="max-w-2xl lg:max-w-3xl mx-auto px-6 py-8 lg:px-8">
+        <section id="introduction" class="mb-12 text-center flex flex-col items-center">
+            <img id="headerImage" src="" alt="Header" class="mx-auto rounded-xl mb-6 w-[80%] md:w-[40%] lg:w-[40%]">
+            <h2 class="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-premium">Welcome to <span id="apiName"></span></h2>
+            <div class="bg-[#000000] border border-neutral-dark rounded-lg p-6 shadow-md transition-all hover:shadow-premium w-full">
+                <p id="apiDescription" class="text-base text-neutral-light mb-6"></p>
+                <p class="text-base text-neutral-light mb-4">
+                    Our platform provides a streamlined API documentation system, enabling developers to explore and test endpoints efficiently in real-time.
+                </p>
+                <p class="text-base text-neutral-light">
+                    Featuring <span id="totalEndpoints"></span> endpoints across <span id="totalCategories"></span> categories, supported by a robust, always-available infrastructure.
+                </p>
+            </div>
+            <div class="w-full mt-6">
+                <a href="/docs" class="block px-8 py-3 bg-[#000000] border border-neutral-dark text-neutral-light font-medium hover:bg-gray-700 text-sm rounded-lg transition-all hover:shadow-premium text-center">
+                    Get Started
+                    <i class="material-icons align-middle text-sm ml-2">arrow_forward</i>
+                </a>
+            </div>
+        </section>
+        <section id="features" class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-premium">Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-[#000000] border border-neutral-dark p-6 rounded-lg shadow-md transition-all hover:shadow-premium">
+                    <div class="w-8 h-8 bg-gradient-premium flex items-center justify-center mb-4 rounded-lg transition-all hover:opacity-90">
+                        <i class="material-icons text-white text-xl">flash_on</i>
+                    </div>
+                    <h3 class="text-base font-medium text-white mb-2">Lightning Fast</h3>
+                    <p class="text-sm text-neutral-light">
+                        Optimized endpoints delivering low-latency responses for efficient application integration.
+                    </p>
+                </div>
+
+                <div class="bg-[#000000] border border-neutral-dark p-6 rounded-lg shadow-md transition-all hover:shadow-premium">
+                    <div class="w-8 h-8 bg-gradient-premium flex items-center justify-center mb-4 rounded-lg transition-all hover:opacity-90">
+                        <i class="material-icons text-white text-xl">lock_open</i>
+                    </div>
+                    <h3 class="text-base font-medium text-white mb-2">No Authentication Required</h3>
+                    <p class="text-sm text-neutral-light">
+                        Immediate access without the need for authentication setup or management.
+                    </p>
+                </div>
+
+                <div class="bg-[#000000] border border-neutral-dark p-6 rounded-lg shadow-md transition-all hover:shadow-premium">
+                    <div class="w-8 h-8 bg-gradient-premium flex items-center justify-center mb-4 rounded-lg transition-all hover:opacity-90">
+                        <i class="material-icons text-white text-xl">code</i>
+                    </div>
+                    <h3 class="text-base font-medium text-white mb-2">Seamless Integration</h3>
+                    <p class="text-sm text-neutral-light">
+                        Standardized JSON outputs complemented by detailed documentation and practical examples.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section id="getting-started" class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-premium">Getting Started</h2>
+            <div class="bg-[#000000] border border-neutral-dark rounded-lg p-6 shadow-md transition-all hover:shadow-premium">
+                <ol class="space-y-6">
+                    <li class="flex">
+                        <div class="flex-shrink-0 w-8 h-8 bg-gradient-premium text-white font-bold text-center leading-8 mr-4 rounded-lg transition-all hover:opacity-90">1</div>
+                        <div>
+                            <h3 class="font-bold text-white">Select a Category</h3>
+                            <p class="text-neutral-light text-base">Navigate through our categorized APIs via the sidebar to find the appropriate endpoints.</p>
+                        </div>
+                    </li>
+                    <li class="flex">
+                        <div class="flex-shrink-0 w-8 h-8 bg-gradient-premium text-white font-bold text-center leading-8 mr-4 rounded-lg transition-all hover:opacity-90">2</div>
+                        <div>
+                            <h3 class="font-bold text-white">Review Documentation</h3>
+                            <p class="text-neutral-light text-base">Examine parameters, response structures, and implementation examples.</p>
+                        </div>
+                    </li>
+                    <li class="flex">
+                        <div class="flex-shrink-0 w-8 h-8 bg-gradient-premium text-white font-bold text-center leading-8 mr-4 rounded-lg transition-all hover:opacity-90">3</div>
+                        <div>
+                            <h3 class="font-bold text-white">Implement Requests</h3>
+                            <p class="text-neutral-light text-base">Execute HTTP calls and incorporate JSON responses into your applications.</p>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+        <section id="terms-of-service" class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-premium">Terms of Service</h2>
+            <div class="bg-[#000000] border border-neutral-dark rounded-lg p-6 shadow-md transition-all hover:shadow-premium">
+                <p class="text-base text-neutral-light mb-4">
+                    By utilizing <span id="apiNameTerms"></span>, you agree to adhere to these terms:
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-base text-neutral-light">
+                    <li>Employ the APIs in a responsible manner, complying with all relevant laws and regulations.</li>
+                    <li>Avoid service abuse, including exceeding established rate limits.</li>
+                    <li>We retain the right to alter or terminate the service without prior notice.</li>
+                    <li>Data and content from the APIs are provided for informational use only.</li>
+                    <li>We disclaim liability for any damages resulting from API usage.</li>
+                </ul>
+                <p class="text-base text-neutral-light mt-4">
+                    For complete terms, reach out via our Telegram channel.
+                </p>
+            </div>
+        </section>
+        <section id="call-to-action" class="mb-12">
+            <div class="bg-[#000000] border border-neutral-dark rounded-lg overflow-hidden shadow-md transition-all hover:shadow-premium">
+                <div class="p-8 md:p-12 bg-[#000000]">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-xs text-neutral-light font-medium">READY TO BUILD</span>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-medium text-white mb-3">Start Building Today</h2>
+                    <p class="text-neutral-light text-sm mb-6 max-w-xl">
+                        Join a global community of developers leveraging our APIs. Gain immediate access to robust endpoints with extensive documentation.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-start gap-3">
+                        <a href="/docs" class="w-full sm:w-auto px-6 py-3 bg-gradient-premium text-white font-medium hover:opacity-90 text-sm rounded-md flex items-center justify-center gap-2 transition-all hover:shadow-premium">
+                            <i class="material-icons text-base text-white">description</i>
+                            View Documentation
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-[#000000] border-t border-gray-800 px-8 py-4">
+                    <div class="flex flex-wrap items-center gap-6 text-xs text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <i class="material-icons text-sm bg-clip-text text-transparent bg-gradient-premium">check_circle</i>
+                            <span>No Authentication</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="material-icons text-sm bg-clip-text text-transparent bg-gradient-premium">check_circle</i>
+                            <span>100% Free</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="material-icons text-sm bg-clip-text text-transparent bg-gradient-premium">check_circle</i>
+                            <span>JSON Responses</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-[#000000] border-t border-neutral-dark py-6 relative z-10 w-full">
+        <div class="max-w-2xl lg:max-w-3xl mx-auto px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="font-semibold text-white mb-3">About</h3>
+                    <p id="aboutText" class="text-sm text-neutral-light leading-relaxed">
+                        Our interactive platform enables seamless exploration and real-time testing of our extensive API endpoints.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white mb-3">Connect</h3>
+                    <div class="flex gap-3">
+                        <a id="telegramLink" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-lg bg-neutral-dark hover:bg-gray-600 text-neutral-light hover:text-white transition-all">
+                            <i class="fab fa-telegram-plane text-lg"></i>
+                        </a>
+                        <a id="messengerLink" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-lg bg-neutral-dark hover:bg-gray-600 text-neutral-light hover:text-white transition-all">
+                            <i class="fab fa-facebook-messenger text-lg"></i>
+                        </a>
+                        <a id="githubLink" target="_blank" class="w-9 h-9 flex items-center justify-center rounded-lg bg-neutral-dark hover:bg-gray-600 text-neutral-light hover:text-white transition-all">
+                            <i class="fab fa-github text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 text-left">
+                <p class="text-sm text-gray-500" id="footerCopyright"></p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        window.addEventListener('load', async () => {
+            const loader = document.getElementById('loader');
+            const main = document.querySelector('main');
+            try {
+                const setRes = await fetch('/set');
+                const setData = await setRes.json();
+                document.querySelector('meta[name="description"]').content = setData.description;
+                document.querySelector('meta[property="og:description"]').content = setData.description;
+                document.querySelector('link[rel="icon"]').href = setData.icon;
+                document.getElementById('footerCopyright').textContent = `© ${new Date().getFullYear()} ${setData.name}. All rights reserved.`;
+                document.getElementById('telegramLink').href = setData.telegram;
+                document.getElementById('messengerLink').href = setData.messenger;
+                document.getElementById('githubLink').href = setData.github;
+                const aboutText = document.getElementById('aboutText');
+
+                document.title = setData.name;
+                document.querySelector('meta[property="og:title"]').content = setData.name;
+                document.getElementById('headerTitle').textContent = setData.name;
+                document.getElementById('apiDescription').textContent = setData.description;
+                document.getElementById('headerImage').src = setData.header.imageSrc[0];
+                document.getElementById('apiName').textContent = setData.name;
+                document.getElementById('apiNameTerms').textContent = setData.name;
+                const res = await fetch('/endpoints');
+                const { endpoints, count } = await res.json();
+                document.getElementById('totalEndpoints').textContent = count;
+                document.getElementById('totalCategories').textContent = endpoints.length;
+            } finally {
+                loader.classList.add('hidden');
+                main.classList.add('loaded');
+            }
+        });
+    </script>
+</body>
+</html>
