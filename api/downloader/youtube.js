@@ -6,7 +6,7 @@ module.exports = {
   meta: {
     name: 'youtube',
     desc: 'Download YouTube videos in various formats using Savetube API',
-    category: 'Downloader',
+    category: 'downloader',
     method: ['GET', 'POST'],
     params: [
       {
