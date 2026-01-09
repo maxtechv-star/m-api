@@ -4,7 +4,7 @@ module.exports = {
   meta: {
     name: 'welcome-goodbye',
     desc: 'Generate welcome and goodbye images - Returns image as data URL',
-    category: 'Canvas',
+    category: 'canvas',
     method: ['GET', 'POST'],
     params: [
       {
