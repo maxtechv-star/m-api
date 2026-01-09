@@ -13,6 +13,7 @@
   "dependencies": {
     "@delirius/welcard": "^1.0.39",
     "@napi-rs/canvas": "^0.1.81",
+    "@metaload/meta-canvas": "github:maxtechv-star/meta-canvas",
     "axios": "^1.6.8",
     "canvas": "^3.2.0",
     "chalk": "^4.1.2",
