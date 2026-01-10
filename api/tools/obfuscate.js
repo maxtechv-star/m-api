@@ -4,7 +4,7 @@ module.exports = {
   meta: {
     name: 'obfuscate',
     desc: 'Obfuscate JavaScript code using PreEmptive protection',
-    category: 'Tools',
+    category: 'tools',
     method: ['POST'],
     params: [
       {
