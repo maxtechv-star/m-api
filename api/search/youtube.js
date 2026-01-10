@@ -4,7 +4,7 @@ module.exports = {
   meta: {
     name: 'youtube',
     desc: 'Search YouTube videos (returns 5 results)',
-    category: 'Search',
+    category: 'search',
     method: ['GET'],
     params: [
       {
